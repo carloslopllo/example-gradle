@@ -42,3 +42,41 @@ Las instrucciones son las siguientes:
         6. en la parte *Instancia*, escoge la máquina que acabas de crear.
         7. pulsa sobre *Asociar*.
         8. si todo ha ido bien, debería aparecerte el mensaje **La dirección IP elástica se ha asociado correctamente. La dirección IP elástica** `Dirección IPv4 asignada` **se ha asociado a instancia** `ID de la instancia`.
+
+## Segundo paso: Instalar Jenkins
+Las instrucciones son las siguientes:
+1. Conéctate a la máquina **EC2** que creaste en el [primer paso](https://github.com/carloslopllo/example-gradle#primer-paso-crear-una-m%C3%A1quina-ec2-en-aws-asign%C3%A1ndole-una-ip-el%C3%A1stica-elastic-ip). Para ello:
+    - en el menú lateral, desplázate a la sección *Instancias* y pulsa sobre *Instancias*. Deberías ver que el *Estado de la instancia* es `En ejecución`.
+    - pulsa sobre el `ID de la instancia`. Deberías ver un *Resumen de la instancia*.
+    - pulsa sobre el botón *Conectar*.
+    - deja la configuración como está y, al final de la página, pulsa sobre *Conectar*. Se te debería abrir una nueva página web en el navegador y, a continuación, una terminal.
+2. Descarga e instala Jenkins. Para ello, sigue los pasos en [Downloading and installing Jenkins](https://www.jenkins.io/doc/tutorials/tutorial-for-installing-jenkins-on-AWS/#downloading-and-installing-jenkins). Si todo ha ido bien, al final deberías ver un mensaje como el siguiente:
+    ```bash
+    [ec2-user@ip-172-31-23-136 ~]$ sudo systemctl status jenkins
+    ● jenkins.service - Jenkins Continuous Integration Server
+        Loaded: loaded (/usr/lib/systemd/system/jenkins.service; enabled; preset: disabled)
+        Active: active (running) since Sun 2024-12-08 14:39:09 UTC; 1min 51s ago
+      Main PID: 26504 (java)
+         Tasks: 45 (limit: 4657)
+        Memory: 688.6M
+           CPU: 16.154s
+        CGroup: /system.slice/jenkins.service
+                └─26504 /usr/bin/java -Djava.awt.headless=true -jar /usr/share/java/jenkins.war --webroot=/var/cache/jenkins/war --httpPort=8080
+    ```
+3. Configura Jenkins. Para ello:
+    - busca **http://**`Dirección IPv4 asignada`**:8080** en el navegador.
+    - en la terminal de la máquina, escribe el mandato `sudo cat /var/lib/jenkins/secrets/initialAdminPassword`. El resultado es la *Administrator password*.
+    - en la siguiente pantalla, pulsa sobre *Install suggested plugins*.
+    - configura el usuario y la contraseña. Por ejemplo:
+
+        | username | password |
+        | -------- | -------- |
+        | odieste  | 3.1415   |
+
+    - pulsa sobre *Save and Continue*.
+    - en la siguiente pantalla, asegúrate de que la *Jenkins URL* es **http://**`Dirección IPv4 asignada`**:8080**.
+    - pulsa sobre *Save and Finish*.
+    - en la siguiente pantalla, pulsa sobre *Start using Jenkins*.
+    - en `Panel de Control` > `Administrar Jenkins` > `Plugins` > `Available plugins`, instala el **Amazon EC2 plugin**. Cuando acabe, pulsa sobre *Volver al inicio de la página*.
+    > [!WARNING]
+    > No sigas los pasos destinados a configurar una nube (*Configure a cloud*) en [Configuring Jenkins](https://www.jenkins.io/doc/tutorials/tutorial-for-installing-jenkins-on-AWS/#configuring-jenkins). Nuestras cuentas de usuario no tienen los privilegios necesarios para hacerlo y tampoco es imprescindible para el ejercicio.
