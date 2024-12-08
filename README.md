@@ -82,7 +82,7 @@ Las instrucciones son las siguientes:
     > No sigas los pasos destinados a configurar una nube (*Configure a cloud*) en [Configuring Jenkins](https://www.jenkins.io/doc/tutorials/tutorial-for-installing-jenkins-on-AWS/#configuring-jenkins). Nuestras cuentas de usuario no tienen los privilegios necesarios para hacerlo y tampoco es imprescindible para el ejercicio.
 
 ## Tercer paso: Crear la estructura inicial del proyecto
-Si partes de un directorio no vacío, puedes invocar el mandato `./gradlew wrapper --gradle-version latest`.
+Si partes de un directorio no vacío, puedes invocar el mandato `./gradlew wrapper --gradle-version 8.11.1`.
 En caso contrario, las instrucciones son las siguientes:
 1. Crea un directorio. Por ejemplo, `mkdir example-gradle/`.
 2. Cambia al directorio recién creado, mediante `cd example-gradle/`.
