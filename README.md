@@ -376,3 +376,25 @@ def updateGitHubStatus(String state, String description) {
     }
 }
 ```
+
+## Advertencias
+1. Asegúrate de que Git está instalado en la máquina. Para ello:
+    - ejecuta el mandato `git --version` y comprueba la salida.
+    - si no está instalado, hazlo mediante:
+        ```bash
+        sudo yum update -y
+        sudo yum install git -y
+        ```
+    - ejecuta, de nuevo, el mandato `git --version` y comprueba la salida.
+2. Asegúrate de que Java está instalado en la máquina. Para ello:
+    - ejecuta los mandatos `java -version` y `javac -version`, comprobando la salida.
+    - si te sucede como a mí, el segundo de ellos fallará.
+    - para resolverlo, ejecuta los siguientes mandatos:
+        ```bash
+        sudo yum install java-17-amazon-corretto-devel
+        export JAVA_HOME=/usr/lib/jvm/java-17-amazon-corretto
+        export PATH=$JAVA_HOME/bin:$PATH
+        ```
+    - ejecuta, de nuevo, los mandatos `java -version` y `javac -version`, comprobando la salida.
+    - si la salida es correcta, puedes agregar las últimas dos líneas al ` ~/.bashrc`, abriéndolo con **nano**.
+    - así, las variables de entorno estarán disponibles la próxima vez que arranques la máquina.
