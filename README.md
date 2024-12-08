@@ -274,3 +274,105 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 ```
+
+## Quinto paso: Definir un trabajo de integración continua en Jenkins
+Las instrucciones son las siguientes:
+1. Crea el token de conexión con **GitHub**. Para ello:
+    - en los [Personal access tokens](https://github.com/settings/tokens) de GitHub, pulsa sobre *Generate new token* y, a continuación, pulsa sobre *Generate new token (classic)*.
+    - dale un nombre en *Note*.
+    - establece la fecha de expiración en *Expiration*.
+    - define los permisos en *Select scopes*. Yo he escogido todos. No es lo mejor porque la política a aplicar siempre es la de **privilegios mínimos**, pero tampoco es un drama en esta situación.
+    - pulsa sobre *Generate token*.
+    - copia y **guarda** el token, porque no volverá a estar disponible.
+    - en **Jenkins**, ve a `Administrar Jenkins` > `Security` > `Credentials`.
+    - en el dominio global, selecciona `Add Credentials`.
+    - escoge **Username with password** en *Kind*.
+    - el *Username* es tu nombre de usuario en GitHub.
+    - pega el token que acabas de crear en el campo *Password*.
+    - asigna un ID único, como `github-token`.
+    - pulsa sobre *Create*.
+2. Configura el **webhook** en GitHub. Para ello:
+    - dirígete a tu repositorio y en `Settings` > `Webhooks`, pulsa sobre *Add webhook*.
+    - la *Payload URL* es **http://**`Dirección IPv4 asignada`**:8080/github-webhook/**.
+    - el *Content type* es `application/json`.
+    - deja vacío el campo *Secret*.
+    - deshabilita la verificación SSL.
+    - en *Which events would you like to trigger this webhook?*, escoge *Let me select individual events.* y marca **Pull requests**.
+    - pulsa sobre *Add webhook*.
+    - GitHub hará un ping para comprobar que todo está correcto y si todo va bien, entonces en la pestaña *Recent Deliveries* del webhook verás una entrega correcta (código **200 OK**).
+3. Crea un **Multibranch Pipeline** en Jenkins. Para ello:
+    - instala el *GitHub Integration Plugin*.
+    - selecciona `Nueva Tarea`, elige **Multibranch Pipeline** y asígnale un nombre.
+    - pulsa sobre *OK*.
+    - en *Branch Sources*, pulsa sobre `Add source`, escoge *GitHub*, establece la *Repository HTTPS URL*, selecciona las credenciales que creaste anteriormente y verifica que la conexión es correcta, pulsando sobre `Validate`.
+    - en cuanto a los *Behaviours*, consulta la siguiente tabla:
+
+        | Nombre                             | Selección                                        |
+        | ---------------------------------- | ------------------------------------------------ |
+        | Discover branches                  | All branches                                     |
+        | Discover pull requests from origin | The current pull request revision                |
+        | Discover pull requests from forks  | The current pull request revision **&** Everyone |
+        | Property strategy                  | All branches get the same properties             |
+
+    - en *Build Conguration*, selecciona `by Jenkinsfile` y comrpueba que el *Script Path* es `Jenkinsfile`
+4. Crea un `Jenkinsfile`. El `Jenkinsfile` define el pipeline. Aquí tienes un ejemplo:
+```groovy
+pipeline {
+    agent any
+
+    environment {
+        GITHUB_TOKEN = credentials('github-token')
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh './gradlew clean build'
+            }
+        }
+
+        stage('JaCoCo Coverage') {
+            steps {
+                sh './gradlew jacocoTestCoverageVerification'
+            }
+        }
+    }
+
+    post {
+        success {
+            script {
+                updateGitHubStatus('SUCCESS', 'Build and coverage passed')
+            }
+        }
+
+        failure {
+            script {
+                updateGitHubStatus('FAILURE', 'Build or coverage failed')
+            }
+        }
+    }
+}
+
+def updateGitHubStatus(String state, String description) {
+    def context = "continuous-integration/jenkins"
+    def commitSha = env.GIT_COMMIT
+
+    withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'carloslopllo', passwordVariable: 'GITHUB_TOKEN')]) {
+        def apiUrl = "https://api.github.com/repos/carloslopllo/example-gradle/statuses/${commitSha}"
+        def data = """
+        {
+            "state": "${state}",
+            "description": "${description}",
+            "context": "${context}"
+        }
+        """
+        sh "curl -X POST -H 'Authorization: token ${GITHUB_TOKEN}' -d '${data}' ${apiUrl}"
+    }
+}
+```
