@@ -314,7 +314,7 @@ Las instrucciones son las siguientes:
         | Discover pull requests from forks  | The current pull request revision **&** Everyone |
         | Property strategy                  | All branches get the same properties             |
 
-    - en *Build Conguration*, selecciona `by Jenkinsfile` y comrpueba que el *Script Path* es `Jenkinsfile`
+    - en *Build Conguration*, selecciona `by Jenkinsfile` y comprueba que el *Script Path* es `Jenkinsfile`
 4. Crea un `Jenkinsfile`. El `Jenkinsfile` define el pipeline. Aquí tienes un ejemplo:
 ```groovy
 pipeline {
@@ -396,5 +396,5 @@ def updateGitHubStatus(String state, String description) {
         export PATH=$JAVA_HOME/bin:$PATH
         ```
     - ejecuta, de nuevo, los mandatos `java -version` y `javac -version`, comprobando la salida.
-    - si la salida es correcta, puedes agregar las últimas dos líneas al ` ~/.bashrc`, abriéndolo con **nano**.
+    - si la salida es correcta, puedes agregar las últimas dos líneas al `~/.bashrc`, abriéndolo con **nano**.
     - así, las variables de entorno estarán disponibles la próxima vez que arranques la máquina.
