@@ -375,16 +375,6 @@ Las instrucciones son las siguientes:
     - selecciona `Nueva Tarea`, elige **Multibranch Pipeline** y asígnale un nombre.
     - pulsa sobre *OK*.
     - en *Branch Sources*, pulsa sobre `Add source`, escoge *GitHub*, establece la *Repository HTTPS URL*, selecciona las credenciales que creaste anteriormente y verifica que la conexión es correcta, pulsando sobre `Validate`.
-    - en cuanto a los *Behaviours*, consulta la siguiente tabla:
-
-        | Nombre                             | Selección                                        |
-        | ---------------------------------- | ------------------------------------------------ |
-        | Discover branches                  | All branches                                     |
-        | Discover pull requests from origin | The current pull request revision                |
-        | Discover pull requests from forks  | The current pull request revision **&** Everyone |
-        | Property strategy                  | All branches get the same properties             |
-
-    - en *Build Conguration*, selecciona `by Jenkinsfile` y comprueba que el *Script Path* es `Jenkinsfile`
 4. Crea un `Jenkinsfile`. El `Jenkinsfile` define el pipeline. Aquí tienes un ejemplo:
 ```groovy
 pipeline {
