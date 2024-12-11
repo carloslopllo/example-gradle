@@ -153,7 +153,7 @@ rootProject.name = 'PROF-Jenkins-Exercise-1' // Cambia según el nombre de tu pr
         ```bash
         gradle clean
         ```
-### Si partes de un directorio **vacío**:
+### Si partes de un directorio **vacío**
 1. Crea un directorio. Por ejemplo, `mkdir example-gradle/`.
 2. Cambia al directorio recién creado, mediante `cd example-gradle/`.
 3. Ejecuta el mandato `gradle init` y sigue las opciones de configuración que aparecen a continuación:
