@@ -5,7 +5,7 @@ Las instrucciones son las siguientes:
 2. Dirígete al [AWS Academy Learner Lab](https://awsacademy.instructure.com/courses/98612).
 3. En el menú [Contenidos](https://awsacademy.instructure.com/courses/98612/modules), busca la sección *Laboratorio para el alumnado de AWS Academy* y pulsa sobre [Lanzamiento del Laboratorio para el alumnado de AWS Academy](https://awsacademy.instructure.com/courses/98612/modules/items/9123681).
 4. Pulsa sobre *Start Lab*. Los laboratorios tienen una duración de **cuatro** horas. Transcurrido ese tiempo, todo el progreso que hayas realizado se perderá. Sin embargo, dado que nosotros no vamos a utilizar estrictamente el laboratorio, puedes estar tranquilo. Sólo lo necesitamos para lanzar la **AWS Console**.
-5. Una vez hayas iniciado el laboratorio, espera a que el círculo situado al lado de *AWS* sea de color verde. Entonces, si pulsas [aquí](https://us-east-1.console.aws.amazon.com/console/home?region=us-east-1#), debería aparecerte la *Página de inicio de la Consola* de AWS.
+5. Una vez hayas iniciado el laboratorio, espera a que el círculo situado al lado de *AWS* sea de color verde. Entonces, si pulsas sobre él, debería aparecerte la *Página de inicio de la Consola* de AWS.
 6. A partir de este punto, en su mayoría, vamos a seguir las indicaciones que figuran en el apartado Moodle [Cómo configurar un servidor Jenkins en AWS](https://www.jenkins.io/doc/tutorials/tutorial-for-installing-jenkins-on-AWS/). Para ello:
     - Crea un **grupo de seguridad**, que utilizaremos para definir qué tráfico de red puede entrar y salir de la máquina:
         1. busca *EC2* en el cuadro de búsqueda situado en la parte superior de la *Página de inicio de la Consola*.
@@ -51,7 +51,7 @@ Las instrucciones son las siguientes:
     - pulsa sobre el botón *Conectar*.
     - deja la configuración como está y, al final de la página, pulsa sobre *Conectar*. Se te debería abrir una nueva página web en el navegador y, a continuación, una terminal.
 2. Descarga e instala Jenkins. Para ello, sigue los pasos en [Downloading and installing Jenkins](https://www.jenkins.io/doc/tutorials/tutorial-for-installing-jenkins-on-AWS/#downloading-and-installing-jenkins). Si todo ha ido bien, al final deberías ver un mensaje como el siguiente:
-    ```bash
+    ```
     [ec2-user@ip-172-31-23-136 ~]$ sudo systemctl status jenkins
     ● jenkins.service - Jenkins Continuous Integration Server
         Loaded: loaded (/usr/lib/systemd/system/jenkins.service; enabled; preset: disabled)
@@ -82,12 +82,82 @@ Las instrucciones son las siguientes:
     > No sigas los pasos destinados a configurar una nube (*Configure a cloud*) en [Configuring Jenkins](https://www.jenkins.io/doc/tutorials/tutorial-for-installing-jenkins-on-AWS/#configuring-jenkins). Nuestras cuentas de usuario no tienen los privilegios necesarios para hacerlo y tampoco es imprescindible para el ejercicio.
 
 ## Tercer paso: Crear la estructura inicial del proyecto
-Si partes de un directorio no vacío, puedes invocar el mandato `./gradlew wrapper --gradle-version 8.11.1`.
-En caso contrario, las instrucciones son las siguientes:
+### Si partes de un directorio **no** vacío
+
+#### **1. Configurar el archivo `build.gradle`**
+Este es el archivo principal que define las dependencias, tareas y configuraciones del proyecto Gradle. Crea este archivo en la raíz del repositorio con el siguiente contenido básico:
+```gradle
+plugins {
+    id 'java' // Para compilar proyectos Java
+}
+
+group = 'com.grise.upm' // Cambia esto según tu paquete
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral() // Repositorio para descargar dependencias
+}
+
+dependencies {
+    // Dependencias necesarias para el proyecto
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.11.3' // Ejemplo: JUnit 5 para pruebas
+}
+
+tasks.test {
+    useJUnitPlatform() // Configura JUnit 5 como el motor de pruebas
+}
+```
+
+#### **2. Reorganizar la estructura de directorios**
+Gradle sigue una convención estándar para la ubicación del código fuente y pruebas. Si el repositorio actual no sigue esta estructura, reorganiza los archivos en la siguiente jerarquía:
+```
+.
+├── build.gradle        # Archivo principal de Gradle
+├── settings.gradle     # Configuración del proyecto
+├── src
+│   ├── main
+│   │   ├── java        # Código fuente principal
+│   │   │   └── com
+│   │   │       └── grise
+│   │   │           └── upm
+│   │   │               └── App.java
+│   │   └── resources   # Recursos del proyecto (opcional)
+│   ├── test
+│       ├── java        # Clases de pruebas
+│       │   └── com
+│       │       └── grise
+│       │           └── upm
+│       │               └── AppTest.java
+│       └── resources   # Recursos para pruebas (opcional)
+```
+Asegúrate de mover las clases existentes a las carpetas correspondientes (`main/java` o `test/java`) según el propósito.
+
+#### **3. Crear el archivo `settings.gradle`**
+Este archivo se utiliza para configurar el nombre del proyecto. Crea un archivo `settings.gradle` en la raíz del repositorio con el siguiente contenido:
+```gradle
+rootProject.name = 'PROF-Jenkins-Exercise-1' // Cambia según el nombre de tu proyecto
+```
+
+#### **4. Probar la configuración**
+1. Abre una terminal en la raíz del proyecto.
+2. Ejecuta los siguientes comandos para verificar que Gradle reconoce el proyecto:
+    - **Compilar**:
+        ```bash
+        gradle build
+        ```
+    - **Ejecutar pruebas**:
+        ```bash
+        gradle test
+        ```
+    - **Limpiar el proyecto**:
+        ```bash
+        gradle clean
+        ```
+### Si partes de un directorio **vacío**:
 1. Crea un directorio. Por ejemplo, `mkdir example-gradle/`.
 2. Cambia al directorio recién creado, mediante `cd example-gradle/`.
 3. Ejecuta el mandato `gradle init` y sigue las opciones de configuración que aparecen a continuación:
-    ```bash
+    ```
     vboxuser@Ubuntu:~/example-gradle$ gradle init
     Starting a Gradle Daemon (subsequent builds will be faster)
 
@@ -135,7 +205,7 @@ En caso contrario, las instrucciones son las siguientes:
     2 actionable tasks: 2 executed
     ```
 Si todo ha ido bien, obtendrás una estructura de directorios como la siguiente:
-```bash
+```
 vboxuser@Ubuntu:~/example-gradle$ tree .
 .
 ├── app
@@ -208,7 +278,7 @@ Modifica el archivo `build.gradle`, de acuerdo con las siguientes instrucciones:
 5. Confirma que el check falla, ejecutando el mandato `./gradlew clean check`.
 
 El contenido final de `build.gradle` es el siguiente:
-```groovy
+```gradle
 /*
  * This file was generated by the Gradle 'init' task.
  *
